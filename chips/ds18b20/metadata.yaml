@@ -1,0 +1,17 @@
+schema_version: 1
+name: ds18b20
+kind: chip
+family: sensor
+interfaces:
+- gpio_bitbang
+description: Maxim DS18B20 1-Wire programmable-resolution digital thermometer
+license: Apache-2.0
+author: '@alpCaner'
+abi_version: '0.1'
+dependencies:
+- repo: alp-sdk
+  version: '>=0.5.0'
+upstream_status: first-class community
+verification:
+  hil_silicon: untested
+  smoke_tests: null_arg_guard

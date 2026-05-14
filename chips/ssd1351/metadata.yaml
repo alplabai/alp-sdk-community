@@ -1,0 +1,18 @@
+schema_version: 1
+name: ssd1351
+kind: chip
+family: display
+interfaces:
+- spi
+- gpio
+description: Solomon Systech SSD1351 128x128 16-bit colour OLED controller (SPI)
+license: Apache-2.0
+author: '@alpCaner'
+abi_version: '0.1'
+dependencies:
+- repo: alp-sdk
+  version: '>=0.5.0'
+upstream_status: first-class community
+verification:
+  hil_silicon: untested
+  smoke_tests: null_arg_guard

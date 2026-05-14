@@ -1,12 +1,110 @@
 # alp-sdk-community contribution registry.
-#
-# Single source of truth for "what's available" in this repo.  Each
-# entry mirrors the contribution's chips/<name>/metadata.yaml or
-# libraries/<name>/metadata.yaml.  `pr-metadata-validate` enforces
-# the cross-check.
+# Single source of truth for "what is available" in this repo.
 schema_version: 1
 contributions:
-  # Seed contributions land in a follow-up commit.  Until then the
-  # list stays empty so customers running `west update --group-filter
-  # +community` get a clean working tree.
-  []
+- kind: chip
+  name: bme680
+  family: sensor
+  interfaces:
+  - i2c
+  description: Bosch BME680 air-quality + temp + pressure + humidity (I2C; chip-ID
+    probe + soft reset)
+  author: '@alpCaner'
+  license: Apache-2.0
+  abi_version: '0.1'
+  upstream_status: first-class community
+- kind: chip
+  name: mpu6050
+  family: sensor
+  interfaces:
+  - i2c
+  description: InvenSense MPU-6050 6-axis IMU (I2C; classic accel + gyro)
+  author: '@alpCaner'
+  license: Apache-2.0
+  abi_version: '0.1'
+  upstream_status: first-class community
+- kind: chip
+  name: pca9685
+  family: io_expander
+  interfaces:
+  - i2c
+  - pwm
+  description: NXP PCA9685 16-channel 12-bit PWM driver (I2C; servo-controller standard)
+  author: '@alpCaner'
+  license: Apache-2.0
+  abi_version: '0.1'
+  upstream_status: first-class community
+- kind: chip
+  name: sx126x
+  family: lora
+  interfaces:
+  - spi
+  - gpio
+  description: Semtech SX126x LoRa / FSK transceiver family (host-side SPI probe stub)
+  author: '@alpCaner'
+  license: Apache-2.0
+  abi_version: '0.1'
+  upstream_status: first-class community
+- kind: chip
+  name: nrf24l01
+  family: wifi
+  interfaces:
+  - spi
+  - gpio
+  description: Nordic nRF24L01+ 2.4 GHz radio transceiver (SPI; register R/W shell)
+  author: '@alpCaner'
+  license: Apache-2.0
+  abi_version: '0.1'
+  upstream_status: first-class community
+- kind: chip
+  name: dhtxx
+  family: sensor
+  interfaces:
+  - gpio_bitbang
+  description: Aosong DHT11 / DHT22 temperature + humidity sensor (1-wire bit-banged)
+  author: '@alpCaner'
+  license: Apache-2.0
+  abi_version: '0.1'
+  upstream_status: first-class community
+- kind: chip
+  name: pcf8574
+  family: io_expander
+  interfaces:
+  - i2c
+  description: NXP PCF8574 8-bit I2C GPIO expander (8 quasi-bidir pins)
+  author: '@alpCaner'
+  license: Apache-2.0
+  abi_version: '0.1'
+  upstream_status: first-class community
+- kind: chip
+  name: ssd1351
+  family: display
+  interfaces:
+  - spi
+  - gpio
+  description: Solomon Systech SSD1351 128x128 16-bit colour OLED controller (SPI)
+  author: '@alpCaner'
+  license: Apache-2.0
+  abi_version: '0.1'
+  upstream_status: first-class community
+- kind: chip
+  name: rfm95w
+  family: lora
+  interfaces:
+  - spi
+  - gpio
+  description: HopeRF RFM95W LoRa transceiver module (SX1276 in a HopeRF can)
+  author: '@alpCaner'
+  license: Apache-2.0
+  abi_version: '0.1'
+  upstream_status: first-class community
+- kind: chip
+  name: ds18b20
+  family: sensor
+  interfaces:
+  - gpio_bitbang
+  description: Maxim DS18B20 1-Wire programmable-resolution digital thermometer
+  author: '@alpCaner'
+  license: Apache-2.0
+  abi_version: '0.1'
+  upstream_status: first-class community

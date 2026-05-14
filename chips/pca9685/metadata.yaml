@@ -1,0 +1,18 @@
+schema_version: 1
+name: pca9685
+kind: chip
+family: io_expander
+interfaces:
+- i2c
+- pwm
+description: NXP PCA9685 16-channel 12-bit PWM driver (I2C; servo-controller standard)
+license: Apache-2.0
+author: '@alpCaner'
+abi_version: '0.1'
+dependencies:
+- repo: alp-sdk
+  version: '>=0.5.0'
+upstream_status: first-class community
+verification:
+  hil_silicon: untested
+  smoke_tests: null_arg_guard
