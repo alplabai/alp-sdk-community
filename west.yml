@@ -1,0 +1,27 @@
+# SPDX-License-Identifier: Apache-2.0
+#
+# alp-sdk-community west manifest.
+#
+# Consumed by alp-sdk customers via:
+#
+#   manifest:
+#     projects:
+#       - name: alp-sdk-community
+#         url: https://github.com/alplabai/alp-sdk-community
+#         revision: main
+#         groups: [community]
+#
+#   west update --group-filter +community
+#
+# Most customers will use Pattern B from docs/contributing-tier-2.md
+# (per-contribution selection via name-allowlist) -- pulling this
+# whole tree is mostly for developers who want to grep through every
+# community driver locally.
+#
+# This manifest stays light: it doesn't import other manifests, just
+# declares itself + lets the `community` group own the workspace
+# scoping.
+
+manifest:
+  self:
+    path: alp-sdk-community

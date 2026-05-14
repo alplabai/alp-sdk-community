@@ -1,0 +1,79 @@
+name: pr-metadata-validate
+on:
+  pull_request:
+    paths:
+      - "chips/**/metadata.yaml"
+      - "libraries/**/metadata.yaml"
+      - "registry.yaml"
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Checkout alp-sdk for the contribution schema
+        uses: actions/checkout@v4
+        with:
+          repository: alplabai/alp-sdk
+          path: alp-sdk-tmp
+
+      - name: Install Python deps
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install jsonschema pyyaml
+
+      - name: Validate every touched metadata.yaml
+        run: |
+          python3 - <<'PY'
+          import json, sys, pathlib, yaml, jsonschema
+          schema_path = pathlib.Path("alp-sdk-tmp/metadata/schemas/contribution-v1.schema.json")
+          schema = json.loads(schema_path.read_text(encoding="utf-8"))
+          validator = jsonschema.Draft7Validator(schema)
+          ok = True
+          for meta in pathlib.Path(".").rglob("chips/*/metadata.yaml"):
+              data = yaml.safe_load(meta.read_text(encoding="utf-8"))
+              errs = list(validator.iter_errors(data))
+              if errs:
+                  ok = False
+                  print(f"FAIL  {meta}")
+                  for e in errs:
+                      print(f"  - {e.message}")
+              else:
+                  print(f"OK    {meta}")
+          for meta in pathlib.Path(".").rglob("libraries/*/metadata.yaml"):
+              data = yaml.safe_load(meta.read_text(encoding="utf-8"))
+              errs = list(validator.iter_errors(data))
+              if errs:
+                  ok = False
+                  print(f"FAIL  {meta}")
+                  for e in errs:
+                      print(f"  - {e.message}")
+              else:
+                  print(f"OK    {meta}")
+          sys.exit(0 if ok else 1)
+          PY
+
+      - name: Cross-check registry.yaml has matching entries
+        run: |
+          python3 - <<'PY'
+          import pathlib, sys, yaml
+          reg = yaml.safe_load(pathlib.Path("registry.yaml").read_text(encoding="utf-8"))
+          reg_names = {(c.get("kind"), c.get("name")) for c in (reg.get("contributions") or [])}
+          missing = []
+          for meta in pathlib.Path(".").rglob("chips/*/metadata.yaml"):
+              data = yaml.safe_load(meta.read_text(encoding="utf-8"))
+              if ("chip", data.get("name")) not in reg_names:
+                  missing.append((meta, data.get("name")))
+          for meta in pathlib.Path(".").rglob("libraries/*/metadata.yaml"):
+              data = yaml.safe_load(meta.read_text(encoding="utf-8"))
+              if ("library", data.get("name")) not in reg_names:
+                  missing.append((meta, data.get("name")))
+          if missing:
+              print("FAIL -- registry.yaml missing entries for:")
+              for m, n in missing:
+                  print(f"  {m} (name={n})")
+              sys.exit(1)
+          print("OK -- registry.yaml is consistent.")
+          PY

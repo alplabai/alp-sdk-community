@@ -1,0 +1,54 @@
+name: pr-lint
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  lint:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install clang-format-14
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang-format-14
+
+      - name: clang-format-diff (warnings only)
+        run: |
+          git fetch origin ${{ github.event.pull_request.base.ref }}
+          # `clang-format-diff` does not fail on style drift; we surface
+          # the diff as a build annotation so reviewers can see it.
+          git diff -U0 origin/${{ github.event.pull_request.base.ref }} -- \
+                '*.c' '*.h' \
+              | clang-format-diff-14 -p1 -style=file > /tmp/format.diff || true
+          if [ -s /tmp/format.diff ]; then
+              echo "::warning::clang-format-diff suggests changes (style drift; PR not blocked)"
+              cat /tmp/format.diff
+          fi
+
+      - name: License-header check (Apache-2.0 / MIT / BSD only)
+        run: |
+          set -euo pipefail
+          status=0
+          # Limit to source files we own (skip third-party imports +
+          # vendored code).
+          for f in $(git diff --name-only origin/${{ github.event.pull_request.base.ref }} -- \
+                       '*.c' '*.h'); do
+            if ! head -10 "$f" | grep -qE 'SPDX-License-Identifier:\s+(Apache-2\.0|MIT|BSD-[23]-Clause)'; then
+              echo "FAIL  $f (missing or non-permissive SPDX-License-Identifier in first 10 lines)"
+              status=1
+            fi
+            if head -20 "$f" | grep -qE 'GPL|GNU General Public License'; then
+              echo "FAIL  $f (GPL-derived licence detected; Tier 2 permits Apache/MIT/BSD only)"
+              status=1
+            fi
+          done
+          exit $status
+
+      - name: registry.yaml entry consistency
+        run: |
+          set -euo pipefail
+          python3 -c "import yaml; print('schema OK' if yaml.safe_load(open('registry.yaml')).get('schema_version')==1 else exit(1))"

@@ -1,0 +1,55 @@
+name: pr-build-contribution
+on:
+  pull_request:
+    paths:
+      - "chips/**"
+      - "libraries/**"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    container:
+      image: ghcr.io/zephyrproject-rtos/ci:latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: alp-sdk-community
+
+      - name: Checkout alp-sdk
+        uses: actions/checkout@v4
+        with:
+          repository: alplabai/alp-sdk
+          path: alp-sdk
+
+      - name: West init + update (alp-sdk topdir)
+        run: |
+          cd alp-sdk
+          west init -l .
+          west update
+
+      - name: Build every touched contribution's first sample
+        run: |
+          set -euo pipefail
+          touched=$(git -C alp-sdk-community diff --name-only \
+                       ${{ github.event.pull_request.base.sha }} \
+                       ${{ github.event.pull_request.head.sha }} \
+                       | grep -E '^(chips|libraries)/' || true)
+          if [ -z "$touched" ]; then
+            echo "No contribution paths touched -- nothing to build."
+            exit 0
+          fi
+          contributions=$(echo "$touched" | awk -F/ '{print $1"/"$2}' | sort -u)
+          status=0
+          for c in $contributions; do
+            sample=$(ls alp-sdk-community/$c/samples/ 2>/dev/null | head -1 || true)
+            if [ -z "$sample" ]; then
+              echo "SKIP  $c (no samples/<sample>/ to build)"
+              continue
+            fi
+            echo "BUILD $c sample $sample"
+            west -C alp-sdk build -b native_sim/native/64 \
+                 alp-sdk-community/$c/samples/$sample \
+                 -d build-$c-$sample || status=1
+          done
+          exit $status

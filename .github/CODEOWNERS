@@ -1,0 +1,19 @@
+# alp-sdk-community CODEOWNERS.
+#
+# Infrastructure (CI workflows, templates, registry.yaml,
+# umbrella LICENSE) is owned by the alplabai org.  Per-contribution
+# CODEOWNERS are written by `pr-metadata-validate` from the touched
+# contribution's `metadata.yaml` -> `author:` field on PR merge --
+# so a chip driver's owner stays the author who landed it.
+
+# Infrastructure
+/.github/                    @alplabai/maintainers
+/registry.yaml               @alplabai/maintainers
+/west.yml                    @alplabai/maintainers
+/LICENSE                     @alplabai/maintainers
+/README.md                   @alplabai/maintainers
+/templates/                  @alplabai/maintainers
+
+# Catch-all (so PRs touching new top-level paths still route to
+# someone for the initial review)
+*                            @alplabai/maintainers

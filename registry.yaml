@@ -1,0 +1,12 @@
+# alp-sdk-community contribution registry.
+#
+# Single source of truth for "what's available" in this repo.  Each
+# entry mirrors the contribution's chips/<name>/metadata.yaml or
+# libraries/<name>/metadata.yaml.  `pr-metadata-validate` enforces
+# the cross-check.
+schema_version: 1
+contributions:
+  # Seed contributions land in a follow-up commit.  Until then the
+  # list stays empty so customers running `west update --group-filter
+  # +community` get a clean working tree.
+  []
